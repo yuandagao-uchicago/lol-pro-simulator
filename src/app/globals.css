@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0e1a;
+  --foreground: #e0e6f0;
+  --gold: #c8aa6e;
+  --gold-dark: #785a28;
+  --blue-accent: #0397ab;
+  --red-accent: #e84057;
+  --card-bg: #1a1f2e;
+  --card-border: #2a3040;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-gold: var(--gold);
+  --color-gold-dark: var(--gold-dark);
+  --color-blue-accent: var(--blue-accent);
+  --color-red-accent: var(--red-accent);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 4px;
+}
+
+/* Champion grid hover */
+.champion-card {
+  transition: all 0.15s ease;
+}
+.champion-card:hover {
+  transform: scale(1.08);
+  z-index: 10;
+}
+
+/* Event animation */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.event-enter {
+  animation: slideIn 0.3s ease forwards;
+}
+
+/* Gold bar animation */
+@keyframes growWidth {
+  from { width: 0%; }
+}
+.gold-bar {
+  animation: growWidth 0.8s ease forwards;
 }
