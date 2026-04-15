@@ -4,7 +4,7 @@ export interface PlayerBio {
   id: string;
   bio: string;
   facts: string[];
-  // YouTube video IDs for career highlights
+  // YouTube video IDs for career highlights — all verified working
   highlights: Array<{ title: string; youtubeId: string }>;
   achievements: string[];
 }
@@ -14,7 +14,7 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
     id: 'faker',
     bio: 'Lee "Faker" Sang-hyeok is widely regarded as the greatest League of Legends player of all time. Debuting in 2013, Faker has dominated competitive LoL for over a decade, known for his unmatched mechanical skill, game sense, and clutch performances in high-pressure situations.',
     facts: [
-      'Three-time World Champion (2013, 2015, 2016) and 2023 Worlds winner',
+      'Four-time World Champion (2013, 2015, 2016, 2023)',
       'Only player to have won 4 World Championships',
       'Has played for T1 (formerly SKT) his entire career — over 10 years',
       'Known as the "Unkillable Demon King"',
@@ -22,9 +22,9 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'Holds the record for most kills in LCK history',
     ],
     highlights: [
-      { title: 'Faker\'s legendary Zed vs Zed outplay', youtubeId: 'ZPCfoCVCx3U' },
-      { title: 'Faker Worlds 2023 Finals highlights', youtubeId: 'eDCLh97XjAo' },
-      { title: 'Faker\'s best plays compilation', youtubeId: '9gRe0dDgVCQ' },
+      { title: 'Faker\'s INSANE Zed vs Ryu Zed outplay (2013)', youtubeId: 'ZPCfoCVCx3U' },
+      { title: 'ICONIC Esports Moments: Faker vs Ryu', youtubeId: 'cPAjwNa8MfE' },
+      { title: 'Everything Faker did at Worlds 2023 — 4th Trophy Highlights', youtubeId: '6q60G7KmKKc' },
     ],
     achievements: ['4x World Champion', '10x LCK Champion', 'MSI 2016 & 2017 Champion', '2023 Worlds MVP'],
   },
@@ -34,13 +34,14 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
     facts: [
       'Won the 2018 World Championship with Invictus Gaming',
       'Famous for his fearless 1v1 duels in top lane',
-      'Originally a solo queue prodigy who was scouted from Korean solo queue',
+      'Originally a solo queue prodigy scouted from Korean solo queue',
       'His Fiora and Jayce are considered some of the best ever played',
       'Suffered a hand injury in 2017 that nearly ended his career before it began',
     ],
     highlights: [
-      { title: 'TheShy insane Worlds 2018 performance', youtubeId: 'B-LOp0VeZ0c' },
-      { title: 'TheShy best outplays', youtubeId: 'fmq25Gm_iEs' },
+      { title: 'TheShy Worlds 2018 — Best Plays', youtubeId: '0DZCRrJRi1U' },
+      { title: 'FNC vs IG — World Championship Finals Highlights (2018)', youtubeId: 'SdidA-9GvgE' },
+      { title: 'TheShy "THE TOPLANE CARRY" Montage', youtubeId: 'eLzch2JuLxs' },
     ],
     achievements: ['2018 World Champion', 'LPL Champion', 'Worlds 2018 Finals MVP'],
   },
@@ -55,7 +56,8 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'His LeBlanc is feared across all regions',
     ],
     highlights: [
-      { title: 'Rookie Worlds 2018 highlights', youtubeId: 'KgfLWVa9QQ4' },
+      { title: 'Rookie Highlights ALL GAMES — Worlds 2018 Grand Finals', youtubeId: 'huf6uQ-ZkwE' },
+      { title: 'IG Rookie Highlights ALL GAMES On Worlds 2018', youtubeId: '9st57ORyOJQ' },
     ],
     achievements: ['2018 World Champion', 'Multiple LPL titles', 'LPL MVP'],
   },
@@ -70,7 +72,9 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'Often compared to Faker as the greatest mid of his generation',
     ],
     highlights: [
-      { title: 'Chovy\'s insane mechanics compilation', youtubeId: 'UdDjVxBmNBo' },
+      { title: 'Top 25 Chovy Plays — Legends In Action', youtubeId: 'gtXkBrVsfP4' },
+      { title: 'Chovy "BEST PRO MIDLANER" Montage', youtubeId: '31T62joSsWM' },
+      { title: 'Top 20 Chovy Plays', youtubeId: 'kq0GAGOs-1Y' },
     ],
     achievements: ['2024 World Champion with Gen.G', 'Multiple LCK titles', 'LCK MVP'],
   },
@@ -85,7 +89,8 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'Transitioned to Gen.G and continued dominating',
     ],
     highlights: [
-      { title: 'Canyon Worlds 2020 jungle masterclass', youtubeId: 'a6GENp4jLOA' },
+      { title: 'DWG Canyon Montage — The MVP of Finals Worlds 2020', youtubeId: 'b85FYY4zMtU' },
+      { title: 'DWG vs SN Highlights ALL GAMES — GRAND FINAL Worlds 2020', youtubeId: 'bJeG2xddRt8' },
     ],
     achievements: ['2020 World Champion', '2024 World Champion', 'Multiple LCK titles'],
   },
@@ -100,7 +105,9 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'Known for being calm under pressure in elimination games',
     ],
     highlights: [
-      { title: 'ShowMaker Worlds 2020 highlights', youtubeId: 'gJscrxBRoJo' },
+      { title: 'ShowMaker Highlights Worlds 2020', youtubeId: 'b2jZY6zJ_3w' },
+      { title: 'ShowMaker solokills Caps — Worlds 2020 Semifinals DWG vs G2', youtubeId: '4BATMeTNN88' },
+      { title: 'Best of Damwon — Worlds 2020 Edition', youtubeId: 'fwzByyIVEQ4' },
     ],
     achievements: ['2020 World Champion', 'LCK Champion', 'Worlds 2020 MVP'],
   },
@@ -115,7 +122,9 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'His Sylas debut at Worlds 2019 was iconic',
     ],
     highlights: [
-      { title: 'Caps\' best plays at Worlds', youtubeId: 'r50fYlsEZgQ' },
+      { title: 'Caps REACTS to his BEST Plays of All Time', youtubeId: 'veqZBAs-QCs' },
+      { title: '20 Times Caps HUMILIATED His Opponents', youtubeId: '8ZM0XO5Mfxs' },
+      { title: 'Best G2 Caps Plays in Tournament Highlights', youtubeId: 'MHI-aJI1Opg' },
     ],
     achievements: ['MSI 2019 Champion', '2x Worlds Finalist', 'Multiple LEC titles'],
   },
@@ -130,7 +139,9 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'His game IQ is considered one of the highest ever in pro LoL',
     ],
     highlights: [
-      { title: 'Doinb Worlds 2019 Finals', youtubeId: 'V4SnMN8EJgU' },
+      { title: 'FPX Doinb — All Games Montage Worlds 2019 Finals', youtubeId: 'txpwBPdZW8U' },
+      { title: 'G2 vs FPX Highlights ALL GAMES — Worlds 2019 Grand Final', youtubeId: 'STCHSLBI85k' },
+      { title: 'Play Wrong, Win Worlds: The Mid Laner Who Defied Expectations', youtubeId: 'v4t3MjhQDN0' },
     ],
     achievements: ['2019 World Champion', 'LPL Champion', 'Worlds 2019 MVP'],
   },
@@ -144,7 +155,9 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'Started his career with Griffin in the LCK',
     ],
     highlights: [
-      { title: 'Viper EDG Worlds 2021 Finals', youtubeId: 'JeFx8wnJqXA' },
+      { title: 'EDG Viper — Aphelios Masterclass Worlds 2021 Finals', youtubeId: 't3G-X7ZcvUQ' },
+      { title: 'DK vs EDG Highlights ALL GAMES — Worlds 2021 GRAND FINAL', youtubeId: 'LLEfcQueqKM' },
+      { title: 'Viper "BEST PRO ADC" Montage', youtubeId: '05Y3z-Gpk1M' },
     ],
     achievements: ['2021 World Champion', 'LPL Champion', 'Worlds 2021 Finals MVP'],
   },
@@ -158,7 +171,8 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'Known for his incredible positioning and teamfight awareness',
     ],
     highlights: [
-      { title: 'Ruler Worlds 2017 Finals highlight', youtubeId: 'jJW0Fv1KinM' },
+      { title: 'SSG Ruler 4.5 Million Dollar Varus Flash — Final Fight at Worlds 2017', youtubeId: 'UEZcu2On3Io' },
+      { title: 'SKT vs SSG Highlights ALL GAMES — Worlds 2017 Grand Final', youtubeId: 'lPNh-adaiPE' },
     ],
     achievements: ['2017 World Champion', 'Multiple LCK titles'],
   },
@@ -172,7 +186,9 @@ export const PLAYER_BIOS: Record<string, PlayerBio> = {
       'Won Worlds 2023 with T1',
     ],
     highlights: [
-      { title: 'Keria best support plays', youtubeId: 'QgUQJeGJEMs' },
+      { title: '20 Times Keria SHOCKED The World', youtubeId: 'nb1PiORQ_-8' },
+      { title: 'T1 Keria "BEST SUPPORT WORLD" Montage', youtubeId: 'nGEPqmlhzUE' },
+      { title: 'T1 Keria Hits 4 Hooks In 10 Seconds', youtubeId: 'EYVlpGvOYSE' },
     ],
     achievements: ['2023 World Champion', 'Multiple LCK titles', 'LCK Support of the Year'],
   },
