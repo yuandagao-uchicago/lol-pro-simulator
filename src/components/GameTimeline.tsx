@@ -272,18 +272,18 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
       </div>
 
       {/* Timeline */}
-      <div ref={timelineRef} className="flex flex-col gap-1 max-h-[500px] overflow-y-auto pr-2 border-l border-card-border/30 ml-1">
+      <div ref={timelineRef} className="flex flex-col gap-3 max-h-[600px] overflow-y-auto pr-3 pl-1 py-2">
         {gameState.events.slice(0, visibleEvents).map((event, i) => (
           <div
             key={i}
             className={`event-enter flex items-start gap-3 border transition-all relative ${
               event.highlight
                 ? `cyber-card-sm event-highlight ${event.team === 'blue'
-                  ? 'border-blue-accent/40 bg-blue-accent/10 p-4'
-                  : 'border-red-accent/40 bg-red-accent/10 p-4'}`
+                  ? 'border-blue-accent/40 bg-blue-accent/10 px-4 py-4'
+                  : 'border-red-accent/40 bg-red-accent/10 px-4 py-4'}`
                 : event.team === 'blue'
-                  ? 'border-blue-accent/[0.06] bg-blue-accent/[0.02] p-3'
-                  : 'border-red-accent/[0.06] bg-red-accent/[0.02] p-3'
+                  ? 'border-blue-accent/[0.08] bg-blue-accent/[0.03] px-4 py-3'
+                  : 'border-red-accent/[0.08] bg-red-accent/[0.03] px-4 py-3'
             }`}
           >
             {/* Side indicator bar */}
@@ -294,16 +294,20 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
               {EVENT_ICONS[event.type]}
             </span>
             <div className="flex-1 min-w-0">
-              <div className={`font-mono ${event.highlight ? 'text-sm font-bold' : 'text-sm text-foreground/80'}`}>
+              <div className={`font-mono leading-relaxed ${event.highlight ? 'text-sm font-bold' : 'text-[13px] text-foreground/80'}`}>
                 {event.description}
               </div>
-              {event.commentary && event.highlight && (
-                <div className="text-[10px] mt-1.5 font-mono italic text-foreground/30 leading-relaxed">
+              {event.commentary && (
+                <div className={`font-mono italic leading-relaxed ${
+                  event.highlight
+                    ? 'text-[11px] mt-2 pt-2 border-t border-card-border/20 text-foreground/35'
+                    : 'text-[10px] mt-1.5 text-foreground/25'
+                }`}>
                   {event.commentary}
                 </div>
               )}
               {event.goldSwing && (
-                <div className={`text-[9px] mt-0.5 font-mono font-bold ${event.team === 'blue' ? 'text-blue-accent/50' : 'text-red-accent/50'}`}>
+                <div className={`text-[9px] mt-1.5 font-mono font-bold ${event.team === 'blue' ? 'text-blue-accent/40' : 'text-red-accent/40'}`}>
                   +{event.goldSwing}g
                 </div>
               )}
