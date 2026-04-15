@@ -9,11 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'am-a.akamaihd.net',
-      },
-      {
-        protocol: 'https',
-        hostname: 'static.lolesports.com',
+        hostname: 'static.wikia.nocookie.net',
       },
     ],
   },

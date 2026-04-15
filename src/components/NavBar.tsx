@@ -39,6 +39,7 @@ export default function NavBar() {
       <div className="flex items-center gap-5">
         {navLink('/pro-draft', 'Pro')}
         {navLink('/draft', 'Custom')}
+        {navLink('/players', 'Roster')}
         {isLoaded && isSignedIn && navLink('/history', 'History')}
         <div className="w-px h-4 bg-card-border" />
         {isLoaded && isSignedIn && <UserButton />}
