@@ -221,7 +221,7 @@ export default function ProDraftPage() {
             <>
               {PLAYER_PHOTOS[selected.id] && (
                 <div className="w-8 h-8 rounded-full overflow-hidden border border-card-border flex-shrink-0 bg-card-bg">
-                  <Image src={PLAYER_PHOTOS[selected.id]} alt={selected.name} width={32} height={32} className="w-full h-full object-cover" unoptimized />
+                  <Image src={PLAYER_PHOTOS[selected.id]} alt={selected.name} width={32} height={32} className="w-full h-full object-cover" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -261,7 +261,7 @@ export default function ProDraftPage() {
               >
                 {PLAYER_PHOTOS[player.id] ? (
                   <div className="w-7 h-7 rounded-full overflow-hidden border border-card-border/50 flex-shrink-0 bg-card-bg">
-                    <Image src={PLAYER_PHOTOS[player.id]} alt={player.name} width={28} height={28} className="w-full h-full object-cover" unoptimized />
+                    <Image src={PLAYER_PHOTOS[player.id]} alt={player.name} width={28} height={28} className="w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="w-7 h-7 rounded-full border border-card-border/30 flex-shrink-0 bg-card-bg flex items-center justify-center">
@@ -423,7 +423,7 @@ export default function ProDraftPage() {
                           <span className="text-foreground/20 w-10 uppercase tracking-widest">{p.lane}</span>
                           {PLAYER_PHOTOS[p.id] ? (
                             <div className="w-6 h-6 rounded-full overflow-hidden border border-card-border/50 flex-shrink-0">
-                              <Image src={PLAYER_PHOTOS[p.id]} alt={p.name} width={24} height={24} className="w-full h-full object-cover" unoptimized />
+                              <Image src={PLAYER_PHOTOS[p.id]} alt={p.name} width={24} height={24} className="w-full h-full object-cover" />
                             </div>
                           ) : (
                             <div className="w-6 h-6 rounded-full border border-card-border/30 flex-shrink-0 bg-card-bg flex items-center justify-center">
@@ -447,7 +447,7 @@ export default function ProDraftPage() {
                           <span className="text-foreground/20 w-10 uppercase tracking-widest">{p.lane}</span>
                           {PLAYER_PHOTOS[p.id] ? (
                             <div className="w-6 h-6 rounded-full overflow-hidden border border-card-border/50 flex-shrink-0">
-                              <Image src={PLAYER_PHOTOS[p.id]} alt={p.name} width={24} height={24} className="w-full h-full object-cover" unoptimized />
+                              <Image src={PLAYER_PHOTOS[p.id]} alt={p.name} width={24} height={24} className="w-full h-full object-cover" />
                             </div>
                           ) : (
                             <div className="w-6 h-6 rounded-full border border-card-border/30 flex-shrink-0 bg-card-bg flex items-center justify-center">

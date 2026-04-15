@@ -43,7 +43,7 @@ function PlayerCard({ player, team, isExpanded, onToggle }: {
         <div className="w-16 h-16 flex-shrink-0 overflow-hidden border border-card-border bg-card-bg"
           style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}>
           {photo ? (
-            <Image src={photo} alt={player.name} width={64} height={64} className="w-full h-full object-cover" unoptimized />
+            <Image src={photo} alt={player.name} width={64} height={64} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-foreground/15 text-xl font-mono font-bold">
               {player.name[0]}

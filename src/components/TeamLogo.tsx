@@ -54,7 +54,6 @@ export default function TeamLogo({ shortName, teamId, size = 'md', className = '
           width={sizeStyle.img}
           height={sizeStyle.img}
           className="w-[75%] h-[75%] object-contain"
-          unoptimized
         />
       ) : (
         <span className={`font-mono font-extrabold ${style.text} ${sizeStyle.text} tracking-wider`}>
