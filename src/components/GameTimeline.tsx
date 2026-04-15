@@ -297,8 +297,8 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
               <div className={`font-mono ${event.highlight ? 'text-sm font-bold' : 'text-sm text-foreground/80'}`}>
                 {event.description}
               </div>
-              {event.commentary && (
-                <div className="text-[10px] mt-1 font-mono italic text-foreground/40 leading-relaxed">
+              {event.commentary && event.highlight && (
+                <div className="text-[10px] mt-1.5 font-mono italic text-foreground/30 leading-relaxed">
                   {event.commentary}
                 </div>
               )}
