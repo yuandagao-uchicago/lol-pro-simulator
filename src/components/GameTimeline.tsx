@@ -2,6 +2,7 @@
 
 import { GameState, GameEvent } from '@/lib/types';
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 interface GameTimelineProps {
   gameState: GameState;
@@ -15,22 +16,132 @@ const EVENT_ICONS: Record<GameEvent['type'], string> = {
   tower: '\ud83c\udff0',
   teamfight: '\ud83d\udca5',
   inhibitor: '\ud83d\udea8',
+  ace: '\ud83d\udc80',
+  steal: '\u2728',
 };
+
+function GoldGraph({ goldTimeline, blueLabel, redLabel }: {
+  goldTimeline: GameState['goldTimeline'];
+  blueLabel: string;
+  redLabel: string;
+}) {
+  if (goldTimeline.length < 2) return null;
+
+  const maxGold = Math.max(...goldTimeline.map(s => Math.max(s.blueGold, s.redGold)));
+  const width = 600;
+  const height = 150;
+  const padding = 30;
+
+  const xScale = (i: number) => padding + (i / (goldTimeline.length - 1)) * (width - padding * 2);
+  const yScale = (gold: number) => height - padding - ((gold / maxGold) * (height - padding * 2));
+
+  const blueLine = goldTimeline.map((s, i) => `${xScale(i)},${yScale(s.blueGold)}`).join(' ');
+  const redLine = goldTimeline.map((s, i) => `${xScale(i)},${yScale(s.redGold)}`).join(' ');
+
+  return (
+    <div className="bg-card-bg rounded-xl border border-card-border p-4">
+      <h3 className="text-sm font-bold text-foreground/60 mb-2">Gold Over Time</h3>
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
+        {/* Grid lines */}
+        {[0.25, 0.5, 0.75, 1].map(pct => (
+          <line
+            key={pct}
+            x1={padding} y1={yScale(maxGold * pct)}
+            x2={width - padding} y2={yScale(maxGold * pct)}
+            stroke="rgba(255,255,255,0.05)" strokeWidth={1}
+          />
+        ))}
+        {/* Lines */}
+        <polyline points={blueLine} fill="none" stroke="#0397ab" strokeWidth={2.5} strokeLinejoin="round" />
+        <polyline points={redLine} fill="none" stroke="#e84057" strokeWidth={2.5} strokeLinejoin="round" />
+        {/* End labels */}
+        {goldTimeline.length > 0 && (
+          <>
+            <text x={width - padding + 5} y={yScale(goldTimeline[goldTimeline.length - 1].blueGold) + 4}
+              fill="#0397ab" fontSize={10} fontWeight="bold">{blueLabel}</text>
+            <text x={width - padding + 5} y={yScale(goldTimeline[goldTimeline.length - 1].redGold) + 4}
+              fill="#e84057" fontSize={10} fontWeight="bold">{redLabel}</text>
+          </>
+        )}
+        {/* Time labels */}
+        {goldTimeline.filter((_, i) => i % Math.max(1, Math.floor(goldTimeline.length / 5)) === 0).map((s, i, arr) => (
+          <text key={s.minute} x={xScale(goldTimeline.indexOf(s))} y={height - 5}
+            fill="rgba(255,255,255,0.3)" fontSize={9} textAnchor="middle">{s.minute}m</text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function PlayerStatsTable({ playerStats, winner }: { playerStats: GameState['playerStats']; winner: string | null }) {
+  const bluePlayers = playerStats.filter(p => p.side === 'blue');
+  const redPlayers = playerStats.filter(p => p.side === 'red');
+
+  const Row = ({ p, isWinner }: { p: typeof playerStats[0]; isWinner: boolean }) => {
+    const kda = ((p.kills + p.assists) / Math.max(1, p.deaths)).toFixed(1);
+    return (
+      <tr className={`border-b border-card-border/30 ${isWinner ? 'bg-gold/5' : ''}`}>
+        <td className="py-2 px-2">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded overflow-hidden flex-shrink-0">
+              <Image src={p.championImage} alt={p.championName} width={28} height={28} className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <div className="text-xs font-semibold">{p.playerName}</div>
+              <div className="text-[10px] text-foreground/30">{p.championName}</div>
+            </div>
+          </div>
+        </td>
+        <td className="py-2 px-2 text-center text-xs font-mono">
+          <span className="text-green-400">{p.kills}</span>/
+          <span className="text-red-400">{p.deaths}</span>/
+          <span className="text-foreground/60">{p.assists}</span>
+        </td>
+        <td className="py-2 px-2 text-center text-xs text-foreground/50">{kda}</td>
+        <td className="py-2 px-2 text-center text-xs text-foreground/50">{p.cs}</td>
+        <td className="py-2 px-2 text-center text-xs text-foreground/50">{(p.gold / 1000).toFixed(1)}k</td>
+        <td className="py-2 px-2 text-center text-xs text-foreground/50">{(p.damage / 1000).toFixed(1)}k</td>
+      </tr>
+    );
+  };
+
+  return (
+    <div className="bg-card-bg rounded-xl border border-card-border overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-card-border text-foreground/40">
+            <th className="py-2 px-2 text-left text-xs font-medium">Player</th>
+            <th className="py-2 px-2 text-center text-xs font-medium">K/D/A</th>
+            <th className="py-2 px-2 text-center text-xs font-medium">KDA</th>
+            <th className="py-2 px-2 text-center text-xs font-medium">CS</th>
+            <th className="py-2 px-2 text-center text-xs font-medium">Gold</th>
+            <th className="py-2 px-2 text-center text-xs font-medium">DMG</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colSpan={6} className="py-1 px-2 text-xs font-bold text-blue-accent bg-blue-accent/5">Blue Side</td></tr>
+          {bluePlayers.map(p => <Row key={p.playerName} p={p} isWinner={winner === 'blue'} />)}
+          <tr><td colSpan={6} className="py-1 px-2 text-xs font-bold text-red-accent bg-red-accent/5">Red Side</td></tr>
+          {redPlayers.map(p => <Row key={p.playerName} p={p} isWinner={winner === 'red'} />)}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export default function GameTimeline({ gameState }: GameTimelineProps) {
   const [visibleEvents, setVisibleEvents] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [speed, setSpeed] = useState<number>(600);
   const timelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isPlaying || visibleEvents >= gameState.events.length) return;
-
     const timer = setTimeout(() => {
       setVisibleEvents((prev) => prev + 1);
-    }, 800);
-
+    }, speed);
     return () => clearTimeout(timer);
-  }, [visibleEvents, isPlaying, gameState.events.length]);
+  }, [visibleEvents, isPlaying, gameState.events.length, speed]);
 
   useEffect(() => {
     if (timelineRef.current) {
@@ -44,78 +155,76 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
   };
 
   const allVisible = visibleEvents >= gameState.events.length;
+  const blueLabel = gameState.blueTeamName || 'Blue';
+  const redLabel = gameState.redTeamName || 'Red';
 
   return (
     <div className="flex flex-col gap-4">
       {/* Scoreboard */}
-      <div className="flex items-center justify-between p-4 bg-card-bg rounded-xl border border-card-border">
+      <div className="flex items-center justify-between p-5 bg-card-bg rounded-xl border border-card-border">
         <div className="text-center flex-1">
-          <div className="text-3xl font-bold text-blue-accent">{gameState.blueKills}</div>
-          <div className="text-xs text-foreground/40 mt-1">Blue Kills</div>
+          <div className="text-xs text-blue-accent font-bold mb-1">{blueLabel}</div>
+          <div className="text-4xl font-extrabold text-blue-accent">{gameState.blueKills}</div>
         </div>
         <div className="flex gap-6 items-center">
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground/60">{gameState.blueTowers}</div>
-            <div className="text-[10px] text-foreground/30">Towers</div>
+            <div className="text-lg font-medium text-foreground/60">{gameState.blueTowers}</div>
+            <div className="text-[10px] text-foreground/30">\ud83c\udff0</div>
           </div>
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground/60">{gameState.blueDragons}</div>
-            <div className="text-[10px] text-foreground/30">Drakes</div>
+            <div className="text-lg font-medium text-foreground/60">{gameState.blueDragons}</div>
+            <div className="text-[10px] text-foreground/30">\ud83d\udc09</div>
           </div>
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground/60">{gameState.blueBarons}</div>
-            <div className="text-[10px] text-foreground/30">Barons</div>
+            <div className="text-lg font-medium text-foreground/60">{gameState.blueBarons}</div>
+            <div className="text-[10px] text-foreground/30">\ud83d\udc79</div>
           </div>
         </div>
-        <div className="px-4">
-          <div className="text-lg font-bold text-gold">VS</div>
+        <div className="px-6">
+          <div className="text-2xl font-extrabold text-gold">VS</div>
         </div>
         <div className="flex gap-6 items-center">
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground/60">{gameState.redBarons}</div>
-            <div className="text-[10px] text-foreground/30">Barons</div>
+            <div className="text-lg font-medium text-foreground/60">{gameState.redBarons}</div>
+            <div className="text-[10px] text-foreground/30">\ud83d\udc79</div>
           </div>
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground/60">{gameState.redDragons}</div>
-            <div className="text-[10px] text-foreground/30">Drakes</div>
+            <div className="text-lg font-medium text-foreground/60">{gameState.redDragons}</div>
+            <div className="text-[10px] text-foreground/30">\ud83d\udc09</div>
           </div>
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground/60">{gameState.redTowers}</div>
-            <div className="text-[10px] text-foreground/30">Towers</div>
+            <div className="text-lg font-medium text-foreground/60">{gameState.redTowers}</div>
+            <div className="text-[10px] text-foreground/30">\ud83c\udff0</div>
           </div>
         </div>
         <div className="text-center flex-1">
-          <div className="text-3xl font-bold text-red-accent">{gameState.redKills}</div>
-          <div className="text-xs text-foreground/40 mt-1">Red Kills</div>
+          <div className="text-xs text-red-accent font-bold mb-1">{redLabel}</div>
+          <div className="text-4xl font-extrabold text-red-accent">{gameState.redKills}</div>
         </div>
       </div>
 
       {/* Gold Bar */}
       <div className="flex items-center gap-3">
-        <span className="text-xs text-blue-accent font-medium w-16 text-right">
+        <span className="text-xs text-blue-accent font-bold w-16 text-right">
           {(gameState.blueGold / 1000).toFixed(1)}k
         </span>
-        <div className="flex-1 h-3 rounded-full overflow-hidden bg-card-bg flex">
+        <div className="flex-1 h-4 rounded-full overflow-hidden bg-card-bg flex">
           <div
-            className="h-full bg-blue-accent gold-bar"
-            style={{
-              width: `${(gameState.blueGold / (gameState.blueGold + gameState.redGold)) * 100}%`,
-            }}
+            className="h-full bg-blue-accent gold-bar rounded-l-full"
+            style={{ width: `${(gameState.blueGold / (gameState.blueGold + gameState.redGold)) * 100}%` }}
           />
           <div
-            className="h-full bg-red-accent gold-bar"
-            style={{
-              width: `${(gameState.redGold / (gameState.blueGold + gameState.redGold)) * 100}%`,
-            }}
+            className="h-full bg-red-accent gold-bar rounded-r-full"
+            style={{ width: `${(gameState.redGold / (gameState.blueGold + gameState.redGold)) * 100}%` }}
           />
         </div>
-        <span className="text-xs text-red-accent font-medium w-16">
+        <span className="text-xs text-red-accent font-bold w-16">
           {(gameState.redGold / 1000).toFixed(1)}k
         </span>
       </div>
 
       {/* Controls */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
         {!allVisible && (
           <>
             <button
@@ -124,32 +233,54 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
             >
               {isPlaying ? 'Pause' : 'Resume'}
             </button>
-            <button
-              onClick={showAll}
+            <button onClick={showAll}
               className="px-4 py-2 text-xs font-medium bg-card-bg border border-card-border rounded-lg hover:border-gold transition-colors"
             >
               Skip to End
             </button>
+            <div className="flex gap-1 ml-2">
+              {[{ label: '1x', ms: 800 }, { label: '2x', ms: 400 }, { label: '4x', ms: 150 }].map(s => (
+                <button key={s.label} onClick={() => setSpeed(s.ms)}
+                  className={`px-2 py-1 text-[10px] rounded font-medium transition-colors ${
+                    speed === s.ms ? 'bg-gold text-background' : 'bg-card-bg text-foreground/40 hover:text-foreground'
+                  }`}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </>
         )}
       </div>
 
       {/* Timeline */}
-      <div ref={timelineRef} className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2">
+      <div ref={timelineRef} className="flex flex-col gap-1.5 max-h-[500px] overflow-y-auto pr-2">
         {gameState.events.slice(0, visibleEvents).map((event, i) => (
           <div
             key={i}
-            className={`event-enter flex items-start gap-3 p-3 rounded-lg border ${
-              event.team === 'blue'
-                ? 'border-blue-accent/20 bg-blue-accent/5'
-                : 'border-red-accent/20 bg-red-accent/5'
+            className={`event-enter flex items-start gap-3 rounded-lg border transition-all ${
+              event.highlight
+                ? event.team === 'blue'
+                  ? 'border-blue-accent/50 bg-blue-accent/15 p-4'
+                  : 'border-red-accent/50 bg-red-accent/15 p-4'
+                : event.team === 'blue'
+                  ? 'border-blue-accent/10 bg-blue-accent/5 p-3'
+                  : 'border-red-accent/10 bg-red-accent/5 p-3'
             }`}
           >
-            <span className="text-lg flex-shrink-0">{EVENT_ICONS[event.type]}</span>
+            <span className={`flex-shrink-0 ${event.highlight ? 'text-2xl' : 'text-lg'}`}>
+              {EVENT_ICONS[event.type]}
+            </span>
             <div className="flex-1 min-w-0">
-              <div className="text-sm">{event.description}</div>
+              <div className={`${event.highlight ? 'text-sm font-bold' : 'text-sm'}`}>
+                {event.description}
+              </div>
+              {event.goldSwing && (
+                <div className={`text-[10px] mt-0.5 ${event.team === 'blue' ? 'text-blue-accent/60' : 'text-red-accent/60'}`}>
+                  +{event.goldSwing}g
+                </div>
+              )}
             </div>
-            <span className="text-xs text-foreground/40 flex-shrink-0 font-mono">
+            <span className="text-xs text-foreground/30 flex-shrink-0 font-mono mt-0.5">
               {event.time}
             </span>
           </div>
@@ -158,22 +289,35 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
 
       {/* Winner */}
       {allVisible && gameState.winner && (
-        <div className={`text-center p-6 rounded-xl border-2 ${
-          gameState.winner === 'blue'
-            ? 'border-blue-accent bg-blue-accent/10'
-            : 'border-red-accent bg-red-accent/10'
-        }`}>
-          <div className="text-3xl font-extrabold mb-1">
-            {gameState.winner === 'blue' ? (
-              <span className="text-blue-accent">Blue Side Wins!</span>
-            ) : (
-              <span className="text-red-accent">Red Side Wins!</span>
+        <>
+          <div className={`text-center p-8 rounded-xl border-2 ${
+            gameState.winner === 'blue'
+              ? 'border-blue-accent bg-blue-accent/10'
+              : 'border-red-accent bg-red-accent/10'
+          }`}>
+            <div className="text-4xl font-extrabold mb-2">
+              {gameState.winner === 'blue' ? (
+                <span className="text-blue-accent">{blueLabel} Wins!</span>
+              ) : (
+                <span className="text-red-accent">{redLabel} Wins!</span>
+              )}
+            </div>
+            <div className="text-sm text-foreground/50 mb-1">
+              Game Duration: {gameState.duration} minutes
+            </div>
+            {gameState.mvp && (
+              <div className="text-sm text-gold font-bold mt-2">
+                MVP: {gameState.mvp}
+              </div>
             )}
           </div>
-          <div className="text-sm text-foreground/50">
-            Game Duration: {gameState.duration} minutes
-          </div>
-        </div>
+
+          {/* Gold Graph */}
+          <GoldGraph goldTimeline={gameState.goldTimeline} blueLabel={blueLabel} redLabel={redLabel} />
+
+          {/* Player Stats */}
+          <PlayerStatsTable playerStats={gameState.playerStats} winner={gameState.winner} />
+        </>
       )}
     </div>
   );

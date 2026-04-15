@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
 import { Champion, DRAFT_ORDER } from '@/lib/types';
+import { Lane, PICK_LANE_ORDER } from '@/lib/lanes';
 import ChampionGrid from '@/components/ChampionGrid';
 import DraftBoard from '@/components/DraftBoard';
 
@@ -30,6 +31,15 @@ export default function DraftPage() {
 
   const currentOrder = step < DRAFT_ORDER.length ? DRAFT_ORDER[step] : null;
   const isComplete = step >= DRAFT_ORDER.length;
+
+  // Figure out which lane is being picked for
+  const getCurrentPickLane = (): Lane | undefined => {
+    if (!currentOrder || currentOrder.action !== 'pick') return undefined;
+    const pickIndex = currentOrder.team === 'blue' ? bluePicks.length : redPicks.length;
+    return PICK_LANE_ORDER[pickIndex];
+  };
+
+  const currentPickLane = getCurrentPickLane();
 
   const disabledIds = new Set([
     ...blueBans.map((c) => c.id),
@@ -145,6 +155,7 @@ export default function DraftPage() {
           currentStep={step}
           phase={isComplete ? 'complete' : currentOrder?.action || 'ban'}
           currentTeam={isComplete ? 'blue' : currentOrder?.team || 'blue'}
+          currentPickLane={currentPickLane}
         />
       </div>
 
@@ -185,6 +196,7 @@ export default function DraftPage() {
           onSelect={handleSelect}
           currentTeam={currentOrder?.team || 'blue'}
           currentAction={currentOrder?.action || 'ban'}
+          suggestedLane={currentPickLane}
         />
       )}
     </div>

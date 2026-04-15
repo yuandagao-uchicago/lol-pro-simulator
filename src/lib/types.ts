@@ -20,9 +20,31 @@ export interface DraftState {
 export interface GameEvent {
   time: string;
   minute: number;
-  type: 'kill' | 'dragon' | 'herald' | 'baron' | 'tower' | 'teamfight' | 'inhibitor';
+  type: 'kill' | 'dragon' | 'herald' | 'baron' | 'tower' | 'teamfight' | 'inhibitor' | 'ace' | 'steal';
   team: 'blue' | 'red';
   description: string;
+  highlight?: boolean; // Big moment — show with more emphasis
+  playerName?: string; // The player who made the play
+  goldSwing?: number;  // How much gold changed hands
+}
+
+export interface GoldSnapshot {
+  minute: number;
+  blueGold: number;
+  redGold: number;
+}
+
+export interface PlayerStats {
+  playerName: string;
+  championName: string;
+  championImage: string;
+  kills: number;
+  deaths: number;
+  assists: number;
+  cs: number;
+  gold: number;
+  damage: number;
+  side: 'blue' | 'red';
 }
 
 export interface GameState {
@@ -37,8 +59,13 @@ export interface GameState {
   blueBarons: number;
   redBarons: number;
   events: GameEvent[];
+  goldTimeline: GoldSnapshot[];
+  playerStats: PlayerStats[];
+  mvp?: string;
   winner: 'blue' | 'red' | null;
   duration: number;
+  blueTeamName?: string;
+  redTeamName?: string;
 }
 
 export interface Simulation {
