@@ -297,6 +297,11 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
               <div className={`font-mono ${event.highlight ? 'text-sm font-bold' : 'text-sm text-foreground/80'}`}>
                 {event.description}
               </div>
+              {event.commentary && (
+                <div className="text-[10px] mt-1 font-mono italic text-foreground/40 leading-relaxed">
+                  {event.commentary}
+                </div>
+              )}
               {event.goldSwing && (
                 <div className={`text-[9px] mt-0.5 font-mono font-bold ${event.team === 'blue' ? 'text-blue-accent/50' : 'text-red-accent/50'}`}>
                   +{event.goldSwing}g

@@ -1,5 +1,6 @@
 import { Champion, GameEvent, GameState, GoldSnapshot, PlayerStats } from './types';
 import { ProPlayer, ProTeam } from './pro-teams';
+import * as C from './commentary';
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -288,6 +289,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(laneMinute), minute: Math.floor(laneMinute),
         type: 'kill', team: advantageSide,
         description: `${killerName}'s ${advantageSide === 'blue' ? blueTeam[bs.laneMatchups.indexOf(matchup)].name : redTeam[bs.laneMatchups.indexOf(matchup)].name} ${verb} ${victimName} in ${matchup.lane} lane`,
+        commentary: C.getKillCommentary(killerName, victimName, false),
         playerName: killerName,
         goldSwing,
       });
@@ -302,6 +304,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
           time: fmt(minute), minute: Math.floor(minute),
           type: 'kill', team: advantageSide,
           description: `${killerName} picks up another kill in ${matchup.lane} — dominating the lane!`,
+          commentary: C.getKillCommentary(killerName, victimName, true),
           playerName: killerName, highlight: true,
         });
       }
@@ -322,6 +325,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
     time: fmt(minute), minute: Math.floor(minute),
     type: 'dragon', team: d1Side,
     description: `${teamLabel(d1Side)} secures the ${d1Name} Drake`,
+    commentary: C.getDragonCommentary(teamLabel(d1Side), false, false, d1Name),
   });
   snapshot();
 
@@ -332,6 +336,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
     time: fmt(minute), minute: Math.floor(minute),
     type: 'herald', team: heraldSide,
     description: `${teamLabel(heraldSide)} takes Rift Herald and charges it mid!`,
+    commentary: `"Good herald pickup by ${teamLabel(heraldSide)}. Let's see what they do with it."`,
   });
   // Herald gives a tower plate or tower
   if (heraldSide === 'blue') { state.blueTowers++; blueRunningGold += 550; }
@@ -340,6 +345,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
     time: fmt(minute + 0.5), minute: Math.floor(minute),
     type: 'tower', team: heraldSide,
     description: `Rift Herald crashes into a tower — ${teamLabel(heraldSide)} takes First Tower!`,
+    commentary: C.getTowerCommentary(teamLabel(heraldSide), 1),
     highlight: true,
     goldSwing: 550,
   });
@@ -377,6 +383,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: 'kill', team: side,
         description: `${killer.name} ${verb} enemies in a river skirmish — ${kills} kill${kills > 1 ? 's' : ''}${tradeText}`,
+        commentary: C.getKillCommentary(killer.name, 'the enemy', kills >= 3),
         playerName: killer.name,
         goldSwing: goldGain,
         highlight: kills >= 3,
@@ -391,6 +398,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: 'tower', team: side,
         description: `${teamLabel(side)} takes a tower after gaining map control`,
+        commentary: C.getTowerCommentary(teamLabel(side), 1),
         goldSwing: 550,
       });
       if (side === 'blue') momentum += 1; else momentum -= 1;
@@ -409,6 +417,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         description: isSoul
           ? `${teamLabel(side)} CLAIMS THE ${dName.toUpperCase()} DRAGON SOUL!`
           : `${teamLabel(side)} slays the ${dName} Drake`,
+        commentary: C.getDragonCommentary(teamLabel(side), isSoul, false, dName),
         highlight: isSoul,
       });
       if (isSoul) { if (side === 'blue') momentum += 5; else momentum -= 5; }
@@ -433,6 +442,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: isAce ? 'ace' : 'teamfight', team: side,
         description: `${tfDesc} — ${teamLabel(side)} wins ${killsW}-${killsL}! ${mvpPlayer.name} leads the charge on ${mvpPlayer.champ.name}`,
+        commentary: C.getTeamfightCommentary(teamLabel(side), killsW, isAce),
         playerName: mvpPlayer.name,
         highlight: isAce || killsW >= 3,
         goldSwing: goldGain,
@@ -443,6 +453,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
           time: fmt(minute + 0.3), minute: Math.floor(minute),
           type: 'ace', team: side,
           description: `ACE! ${teamLabel(side)} wipes the enemy team!`,
+          commentary: C.getTeamfightCommentary(teamLabel(side), killsW, true),
           highlight: true,
         });
       }
@@ -472,6 +483,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: 'steal', team: stealSide,
         description: `BARON STEAL! ${stealer.name} steals Baron Nashor with a clutch smite!`,
+        commentary: C.getBaronCommentary(teamLabel(stealSide), true, stealer.name),
         playerName: stealer.name, highlight: true, goldSwing: 1500,
       });
     } else {
@@ -484,6 +496,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: 'baron', team: baronSide,
         description: `${teamLabel(baronSide)} wins the Baron fight and secures Nashor!`,
+        commentary: C.getBaronCommentary(teamLabel(baronSide), false),
         highlight: true, goldSwing: 1500,
       });
     }
@@ -494,6 +507,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
       time: fmt(minute), minute: Math.floor(minute),
       type: 'baron', team: baronSide,
       description: `${teamLabel(baronSide)} secures an uncontested Baron Nashor`,
+      commentary: C.getBaronCommentary(teamLabel(baronSide), false),
     });
   }
   snapshot();
@@ -527,6 +541,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: killsW >= 4 ? 'ace' : 'teamfight', team: side,
         description: `${tfDesc} — ${teamLabel(side)} dominates ${killsW}-${killsL}! ${mvpPlayer.name}'s ${mvpPlayer.champ.name} is unstoppable!`,
+        commentary: C.getTeamfightCommentary(teamLabel(side), killsW, killsW >= 4),
         playerName: mvpPlayer.name,
         highlight: true,
         goldSwing: goldGain,
@@ -542,6 +557,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute + 0.5), minute: Math.floor(minute),
         type: 'tower', team: side,
         description: `${teamLabel(side)} pushes and destroys ${towersTaken} tower${towersTaken > 1 ? 's' : ''} off the fight`,
+        commentary: C.getTowerCommentary(teamLabel(side), towersTaken),
         goldSwing: towersTaken * 550,
       });
 
@@ -555,6 +571,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: 'dragon', team: side,
         description: `${teamLabel(side)} slays the ELDER DRAGON — execute threshold active!`,
+        commentary: C.getDragonCommentary(teamLabel(side), false, true),
         highlight: true,
       });
 
@@ -567,6 +584,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         time: fmt(minute), minute: Math.floor(minute),
         type: 'baron', team: side,
         description: `${teamLabel(side)} secures another Baron!`,
+        commentary: C.getBaronCommentary(teamLabel(side), false),
       });
     }
 
@@ -599,12 +617,14 @@ export function simulateGame(opts: SimulationOptions): GameState {
     time: fmt(minute), minute: Math.floor(minute),
     type: 'teamfight', team: state.winner,
     description: `${teamLabel(state.winner)} wins a decisive teamfight! ${finalMVP.name} goes off!`,
+    commentary: C.getTeamfightCommentary(teamLabel(state.winner), 4, true),
     playerName: finalMVP.name, highlight: true,
   });
   state.events.push({
     time: fmt(minute + 0.5), minute: Math.floor(minute),
     type: 'inhibitor', team: state.winner,
     description: `${teamLabel(state.winner)} storms through the Inhibitor and ends the game!`,
+    commentary: C.getVictoryCommentary(teamLabel(state.winner), Math.floor(minute + 1), undefined),
     highlight: true,
   });
 
