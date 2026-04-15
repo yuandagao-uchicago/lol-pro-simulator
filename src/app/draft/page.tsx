@@ -149,6 +149,8 @@ export default function DraftPage() {
           phase={isComplete ? 'complete' : currentOrder?.action || 'ban'}
           currentTeam={isComplete ? 'blue' : currentOrder?.team || 'blue'}
           currentPickLane={currentPickLane}
+          blueTeamName="BLU"
+          redTeamName="RED"
         />
       </div>
 

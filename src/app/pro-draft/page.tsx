@@ -6,9 +6,12 @@ import { useAuth } from '@clerk/nextjs';
 import { Champion, DRAFT_ORDER } from '@/lib/types';
 import { Lane, LANE_LABELS, PICK_LANE_ORDER } from '@/lib/lanes';
 import { ProTeam, ProPlayer, PlayerWithTeam, getAllPlayers, buildCustomTeam } from '@/lib/pro-teams';
+import { TEAM_LOGOS, PLAYER_PHOTOS } from '@/lib/team-assets';
 import { autofillDraft } from '@/lib/autofill';
+import Image from 'next/image';
 import ChampionGrid from '@/components/ChampionGrid';
 import DraftBoard from '@/components/DraftBoard';
+import TeamLogo from '@/components/TeamLogo';
 
 type Phase = 'team-select' | 'drafting';
 type SetupMode = 'preset' | 'custom';
@@ -215,10 +218,17 @@ export default function ProDraftPage() {
             {LANE_LABELS[lane]}
           </span>
           {selected ? (
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-mono font-bold truncate">{selected.name}</div>
-              <div className="text-[9px] font-mono text-foreground/30 truncate">{selected.teamShortName}</div>
-            </div>
+            <>
+              {PLAYER_PHOTOS[selected.id] && (
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-card-border flex-shrink-0 bg-card-bg">
+                  <Image src={PLAYER_PHOTOS[selected.id]} alt={selected.name} width={32} height={32} className="w-full h-full object-cover" unoptimized />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-mono font-bold truncate">{selected.name}</div>
+                <div className="text-[9px] font-mono text-foreground/30 truncate">{selected.teamShortName}</div>
+              </div>
+            </>
           ) : (
             <span className="text-[10px] font-mono text-foreground/20">{'> select player'}</span>
           )}
@@ -249,6 +259,15 @@ export default function ProDraftPage() {
                 onClick={() => { setCustom(prev => ({ ...prev, [lane]: player })); setOpen(false); }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-foreground/5 border-b border-card-border/20 transition-colors"
               >
+                {PLAYER_PHOTOS[player.id] ? (
+                  <div className="w-7 h-7 rounded-full overflow-hidden border border-card-border/50 flex-shrink-0 bg-card-bg">
+                    <Image src={PLAYER_PHOTOS[player.id]} alt={player.name} width={28} height={28} className="w-full h-full object-cover" unoptimized />
+                  </div>
+                ) : (
+                  <div className="w-7 h-7 rounded-full border border-card-border/30 flex-shrink-0 bg-card-bg flex items-center justify-center">
+                    <span className="text-[8px] font-mono text-foreground/20">{player.name[0]}</span>
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-mono font-semibold">{player.name}</div>
                   <div className="text-[9px] font-mono text-foreground/25">{player.teamShortName} &middot; {player.teamName}</div>
@@ -337,9 +356,14 @@ export default function ProDraftPage() {
                             : 'border-card-border bg-card-bg hover:border-blue-accent/30'
                       }`}
                     >
-                      <div className="text-xs font-mono font-bold">{team.shortName}</div>
-                      <div className="text-[9px] font-mono text-foreground/30">{team.name}</div>
-                      <div className="text-[8px] font-mono text-foreground/20 mt-0.5">{team.region}</div>
+                      <div className="flex items-center gap-2">
+                        <TeamLogo shortName={team.shortName} teamId={team.id} size="sm" />
+                        <div>
+                          <div className="text-xs font-mono font-bold">{team.shortName}</div>
+                          <div className="text-[9px] font-mono text-foreground/30">{team.name}</div>
+                          <div className="text-[8px] font-mono text-foreground/20 mt-0.5">{team.region}</div>
+                        </div>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -373,9 +397,14 @@ export default function ProDraftPage() {
                             : 'border-card-border bg-card-bg hover:border-red-accent/30'
                       }`}
                     >
-                      <div className="text-xs font-mono font-bold">{team.shortName}</div>
-                      <div className="text-[9px] font-mono text-foreground/30">{team.name}</div>
-                      <div className="text-[8px] font-mono text-foreground/20 mt-0.5">{team.region}</div>
+                      <div className="flex items-center gap-2">
+                        <TeamLogo shortName={team.shortName} teamId={team.id} size="sm" />
+                        <div>
+                          <div className="text-xs font-mono font-bold">{team.shortName}</div>
+                          <div className="text-[9px] font-mono text-foreground/30">{team.name}</div>
+                          <div className="text-[8px] font-mono text-foreground/20 mt-0.5">{team.region}</div>
+                        </div>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -392,6 +421,15 @@ export default function ProDraftPage() {
                       {blueTeamInfo.roster.map(p => (
                         <div key={p.id} className="animate-fade-up flex items-center gap-2 text-[10px] font-mono bg-card-bg/50 border border-card-border/30 px-3 py-1.5 cyber-card-sm">
                           <span className="text-foreground/20 w-10 uppercase tracking-widest">{p.lane}</span>
+                          {PLAYER_PHOTOS[p.id] ? (
+                            <div className="w-6 h-6 rounded-full overflow-hidden border border-card-border/50 flex-shrink-0">
+                              <Image src={PLAYER_PHOTOS[p.id]} alt={p.name} width={24} height={24} className="w-full h-full object-cover" unoptimized />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 rounded-full border border-card-border/30 flex-shrink-0 bg-card-bg flex items-center justify-center">
+                              <span className="text-[7px] text-foreground/20">{p.name[0]}</span>
+                            </div>
+                          )}
                           <span className="font-bold">{p.name}</span>
                           <span className="text-foreground/15 ml-auto text-[9px]">{p.signatureChamps.slice(0, 3).join(', ')}</span>
                         </div>
@@ -407,6 +445,15 @@ export default function ProDraftPage() {
                       {redTeamInfo.roster.map(p => (
                         <div key={p.id} className="animate-fade-up flex items-center gap-2 text-[10px] font-mono bg-card-bg/50 border border-card-border/30 px-3 py-1.5 cyber-card-sm">
                           <span className="text-foreground/20 w-10 uppercase tracking-widest">{p.lane}</span>
+                          {PLAYER_PHOTOS[p.id] ? (
+                            <div className="w-6 h-6 rounded-full overflow-hidden border border-card-border/50 flex-shrink-0">
+                              <Image src={PLAYER_PHOTOS[p.id]} alt={p.name} width={24} height={24} className="w-full h-full object-cover" unoptimized />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 rounded-full border border-card-border/30 flex-shrink-0 bg-card-bg flex items-center justify-center">
+                              <span className="text-[7px] text-foreground/20">{p.name[0]}</span>
+                            </div>
+                          )}
                           <span className="font-bold">{p.name}</span>
                           <span className="text-foreground/15 ml-auto text-[9px]">{p.signatureChamps.slice(0, 3).join(', ')}</span>
                         </div>
@@ -511,6 +558,10 @@ export default function ProDraftPage() {
           phase={isComplete ? 'complete' : currentOrder?.action || 'ban'}
           currentTeam={isComplete ? 'blue' : currentOrder?.team || 'blue'}
           currentPickLane={currentPickLane}
+          blueTeamName={effectiveTeams?.blue.shortName}
+          redTeamName={effectiveTeams?.red.shortName}
+          blueTeamId={effectiveTeams?.blue.id}
+          redTeamId={effectiveTeams?.red.id}
         />
       </div>
 

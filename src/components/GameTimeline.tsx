@@ -244,21 +244,25 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
           <>
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="px-4 py-2 text-xs font-medium bg-card-bg border border-card-border rounded-lg hover:border-gold transition-colors"
+              className="px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest bg-card-bg border border-card-border hover:border-gold/50 transition-all"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}
             >
-              {isPlaying ? 'Pause' : 'Resume'}
+              {isPlaying ? '// pause' : '// resume'}
             </button>
             <button onClick={showAll}
-              className="px-4 py-2 text-xs font-medium bg-card-bg border border-card-border rounded-lg hover:border-gold transition-colors"
+              className="px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest bg-card-bg border border-card-border hover:border-gold/50 transition-all"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}
             >
-              Skip to End
+              {'>> skip'}
             </button>
-            <div className="flex gap-1 ml-2">
+            <div className="w-px h-5 bg-card-border mx-1" />
+            <div className="flex gap-1">
               {[{ label: '1x', ms: 800 }, { label: '2x', ms: 400 }, { label: '4x', ms: 150 }].map(s => (
                 <button key={s.label} onClick={() => setSpeed(s.ms)}
-                  className={`px-2 py-1 text-[10px] rounded font-medium transition-colors ${
-                    speed === s.ms ? 'bg-gold text-background' : 'bg-card-bg text-foreground/40 hover:text-foreground'
-                  }`}>
+                  className={`px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-wider transition-all border ${
+                    speed === s.ms ? 'bg-gold text-background border-gold/60 shadow-[0_0_6px_rgba(240,224,64,0.2)]' : 'bg-card-bg text-foreground/30 border-card-border hover:text-foreground hover:border-foreground/20'
+                  }`}
+                  style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px))' }}>
                   {s.label}
                 </button>
               ))}
@@ -268,34 +272,38 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
       </div>
 
       {/* Timeline */}
-      <div ref={timelineRef} className="flex flex-col gap-1.5 max-h-[500px] overflow-y-auto pr-2">
+      <div ref={timelineRef} className="flex flex-col gap-1 max-h-[500px] overflow-y-auto pr-2 border-l border-card-border/30 ml-1">
         {gameState.events.slice(0, visibleEvents).map((event, i) => (
           <div
             key={i}
-            className={`event-enter flex items-start gap-3 rounded-lg border transition-all ${
+            className={`event-enter flex items-start gap-3 border transition-all relative ${
               event.highlight
-                ? event.team === 'blue'
-                  ? 'border-blue-accent/50 bg-blue-accent/15 p-4'
-                  : 'border-red-accent/50 bg-red-accent/15 p-4'
+                ? `cyber-card-sm event-highlight ${event.team === 'blue'
+                  ? 'border-blue-accent/40 bg-blue-accent/10 p-4'
+                  : 'border-red-accent/40 bg-red-accent/10 p-4'}`
                 : event.team === 'blue'
-                  ? 'border-blue-accent/10 bg-blue-accent/5 p-3'
-                  : 'border-red-accent/10 bg-red-accent/5 p-3'
+                  ? 'border-blue-accent/[0.06] bg-blue-accent/[0.02] p-3'
+                  : 'border-red-accent/[0.06] bg-red-accent/[0.02] p-3'
             }`}
           >
-            <span className={`flex-shrink-0 ${event.highlight ? 'text-2xl' : 'text-lg'}`}>
+            {/* Side indicator bar */}
+            <div className={`absolute left-0 top-2 bottom-2 w-[2px] ${
+              event.team === 'blue' ? 'bg-blue-accent/30' : 'bg-red-accent/30'
+            }`} />
+            <span className={`flex-shrink-0 ${event.highlight ? 'text-2xl' : 'text-lg'} ml-1`}>
               {EVENT_ICONS[event.type]}
             </span>
             <div className="flex-1 min-w-0">
-              <div className={`${event.highlight ? 'text-sm font-bold' : 'text-sm'}`}>
+              <div className={`font-mono ${event.highlight ? 'text-sm font-bold' : 'text-sm text-foreground/80'}`}>
                 {event.description}
               </div>
               {event.goldSwing && (
-                <div className={`text-[10px] mt-0.5 ${event.team === 'blue' ? 'text-blue-accent/60' : 'text-red-accent/60'}`}>
+                <div className={`text-[9px] mt-0.5 font-mono font-bold ${event.team === 'blue' ? 'text-blue-accent/50' : 'text-red-accent/50'}`}>
                   +{event.goldSwing}g
                 </div>
               )}
             </div>
-            <span className="text-xs text-foreground/30 flex-shrink-0 font-mono mt-0.5">
+            <span className="text-[10px] text-foreground/20 flex-shrink-0 font-mono mt-0.5 tabular-nums tracking-wide">
               {event.time}
             </span>
           </div>
@@ -305,23 +313,36 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
       {/* Winner */}
       {allVisible && gameState.winner && (
         <>
-          <div className={`text-center p-8 rounded-xl border-2 ${
+          <div className={`victory-enter text-center p-8 border-2 cyber-card relative overflow-hidden ${
             gameState.winner === 'blue'
-              ? 'border-blue-accent bg-blue-accent/10'
-              : 'border-red-accent bg-red-accent/10'
+              ? 'border-blue-accent/60 bg-blue-accent/[0.08]'
+              : 'border-red-accent/60 bg-red-accent/[0.08]'
           }`}>
-            <div className="text-4xl font-extrabold mb-2">
+            {/* Victory decorative elements */}
+            <div className={`absolute inset-0 ${
+              gameState.winner === 'blue'
+                ? 'bg-gradient-to-b from-blue-accent/[0.06] via-transparent to-transparent'
+                : 'bg-gradient-to-b from-red-accent/[0.06] via-transparent to-transparent'
+            }`} />
+            <div className={`absolute top-0 left-0 right-0 h-px ${
+              gameState.winner === 'blue'
+                ? 'bg-gradient-to-r from-transparent via-blue-accent/60 to-transparent'
+                : 'bg-gradient-to-r from-transparent via-red-accent/60 to-transparent'
+            }`} />
+            <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-foreground/30 mb-3 relative z-10">// match result</div>
+            <div className="text-4xl font-extrabold mb-3 font-mono relative z-10">
               {gameState.winner === 'blue' ? (
-                <span className="text-blue-accent">{blueLabel} Wins!</span>
+                <span className="neon-blue">{blueLabel} Wins!</span>
               ) : (
-                <span className="text-red-accent">{redLabel} Wins!</span>
+                <span className="neon-red">{redLabel} Wins!</span>
               )}
             </div>
-            <div className="text-sm text-foreground/50 mb-1">
-              Game Duration: {gameState.duration} minutes
+            <div className="neon-line-h w-24 mx-auto mb-3 opacity-40" />
+            <div className="text-[10px] font-mono text-foreground/40 mb-1 uppercase tracking-widest relative z-10">
+              Duration: {gameState.duration} minutes
             </div>
             {gameState.mvp && (
-              <div className="text-sm text-gold font-bold mt-2">
+              <div className="text-sm font-mono font-bold neon-gold mt-3 relative z-10 uppercase tracking-wider">
                 MVP: {gameState.mvp}
               </div>
             )}

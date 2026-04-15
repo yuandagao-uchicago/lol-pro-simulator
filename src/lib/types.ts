@@ -23,6 +23,7 @@ export interface GameEvent {
   type: 'kill' | 'dragon' | 'herald' | 'baron' | 'tower' | 'teamfight' | 'inhibitor' | 'ace' | 'steal';
   team: 'blue' | 'red';
   description: string;
+  commentary?: string; // Caster-style quote
   highlight?: boolean; // Big moment — show with more emphasis
   playerName?: string; // The player who made the play
   goldSwing?: number;  // How much gold changed hands

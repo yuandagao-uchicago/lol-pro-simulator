@@ -4,6 +4,7 @@ export interface ProPlayer {
   id: string;
   name: string;         // IGN
   realName?: string;
+  photo?: string;       // Player photo URL
   lane: Lane;
   // Normalized stats (0-100 scale, relative to other pros)
   mechanics: number;     // Laning, outplays, solo kills
