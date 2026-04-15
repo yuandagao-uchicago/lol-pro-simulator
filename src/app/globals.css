@@ -1,18 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #05081a;
-  --foreground: #e0e6f0;
-  --gold: #c8aa6e;
-  --gold-dark: #785a28;
-  --gold-glow: #c8aa6e40;
-  --blue-accent: #0397ab;
-  --blue-glow: #0397ab40;
-  --red-accent: #e84057;
-  --red-glow: #e8405740;
-  --card-bg: #0d1128;
-  --card-border: #1a2040;
-  --surface: #111630;
+  --background: #0a0a0f;
+  --foreground: #d0d0e8;
+  --gold: #f0e040;
+  --gold-dark: #b8a010;
+  --gold-glow: #f0e04050;
+  --blue-accent: #00e5ff;
+  --blue-glow: #00e5ff40;
+  --red-accent: #ff2060;
+  --red-glow: #ff206040;
+  --card-bg: #12121c;
+  --card-border: #1e1e30;
+  --surface: #16161f;
+  --cyber-purple: #b040ff;
+  --cyber-purple-glow: #b040ff40;
+  --cyber-pink: #ff40a0;
+  --cyber-pink-glow: #ff40a040;
+  --neon-green: #30ff80;
 }
 
 @theme inline {
@@ -32,31 +37,60 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  font-family: var(--font-mono, 'Courier New', monospace);
 }
 
-/* ── Background Texture ────────────────────────────── */
+/* ── Cyberpunk Grid Background ─────────────────────── */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(3, 151, 171, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 50%, rgba(232, 64, 87, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 0%, rgba(200, 170, 110, 0.03) 0%, transparent 40%);
+    /* Horizon glow */
+    radial-gradient(ellipse 120% 40% at 50% 100%, rgba(176, 64, 255, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 40% at 50% 100%, rgba(0, 229, 255, 0.04) 0%, transparent 60%),
+    /* Corner accents */
+    radial-gradient(circle at 0% 0%, rgba(255, 32, 96, 0.03) 0%, transparent 30%),
+    radial-gradient(circle at 100% 0%, rgba(0, 229, 255, 0.03) 0%, transparent 30%),
+    /* Grid */
+    linear-gradient(rgba(176, 64, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 64, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 60px 60px, 60px 60px;
   pointer-events: none;
   z-index: -1;
 }
 
+/* ── Scanline overlay ──────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
 /* ── Scrollbar ─────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: var(--cyber-purple); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--blue-accent); }
+
+/* ── Selection ─────────────────────────────────────── */
+::selection {
+  background: rgba(0, 229, 255, 0.25);
+  color: #fff;
+}
 
 /* ── Page Transitions ──────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeIn {
@@ -64,20 +98,27 @@ body::before {
   to { opacity: 1; }
 }
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-24px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(-30px) skewX(-2deg); }
+  to { opacity: 1; transform: translateX(0) skewX(0deg); }
 }
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(24px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(30px) skewX(2deg); }
+  to { opacity: 1; transform: translateX(0) skewX(0deg); }
 }
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92); }
+  from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--gold-glow); }
-  50% { box-shadow: 0 0 20px 4px var(--gold-glow); }
+@keyframes glitchFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; transform: translateX(-2px); }
+  94% { opacity: 1; transform: translateX(2px); }
+  95% { opacity: 0.9; transform: translateX(0); }
+}
+@keyframes neonPulse {
+  0%, 100% { text-shadow: 0 0 4px var(--blue-glow), 0 0 12px var(--blue-glow); }
+  50% { text-shadow: 0 0 8px var(--blue-glow), 0 0 24px var(--blue-glow), 0 0 40px var(--blue-glow); }
 }
 @keyframes shimmer {
   0% { background-position: -200% center; }
@@ -87,55 +128,64 @@ body::before {
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes borderGlow {
+  0%, 100% { border-color: var(--card-border); }
+  50% { border-color: rgba(0, 229, 255, 0.3); }
+}
+@keyframes typeWriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
 
-.animate-fade-up { animation: fadeUp 0.5s ease both; }
+.animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-fade-in { animation: fadeIn 0.4s ease both; }
-.animate-slide-left { animation: slideInLeft 0.5s ease both; }
-.animate-slide-right { animation: slideInRight 0.5s ease both; }
-.animate-scale-in { animation: scaleIn 0.4s ease both; }
-.animate-pulse-glow { animation: pulseGlow 2s infinite; }
+.animate-slide-left { animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-slide-right { animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-scale-in { animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-pulse-glow { animation: neonPulse 2s infinite; }
 .animate-slide-down { animation: slideDown 0.3s ease both; }
+.animate-glitch { animation: glitchFlicker 4s infinite; }
 
 /* Stagger children */
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 320ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 400ms; }
 
 /* ── Champion Grid ─────────────────────────────────── */
 .champion-card {
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
 }
 .champion-card:hover {
-  transform: scale(1.1);
+  transform: scale(1.12);
   z-index: 10;
-  box-shadow: 0 0 16px rgba(200, 170, 110, 0.2);
+  box-shadow:
+    0 0 8px var(--cyber-purple-glow),
+    0 0 20px rgba(0, 229, 255, 0.15);
 }
 
 /* ── Banned champion ───────────────────────────────── */
-.banned {
-  position: relative;
-}
+.banned { position: relative; }
 .banned::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 45%, var(--red-accent) 45%, var(--red-accent) 55%, transparent 55%);
-  opacity: 0.6;
+  background: linear-gradient(135deg, transparent 42%, var(--red-accent) 42%, var(--red-accent) 58%, transparent 58%);
+  opacity: 0.7;
 }
 
 /* ── Event Timeline ────────────────────────────────── */
 @keyframes eventSlideIn {
-  from { opacity: 0; transform: translateX(-20px) scale(0.97); }
-  to { opacity: 1; transform: translateX(0) scale(1); }
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 .event-enter {
-  animation: eventSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: eventSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Highlight events get extra flair */
 .event-highlight {
   position: relative;
   overflow: hidden;
@@ -147,8 +197,8 @@ body::before {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-  animation: shimmer 2s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(176, 64, 255, 0.06), transparent);
+  animation: shimmer 3s ease-in-out infinite;
 }
 
 /* ── Gold Bar ──────────────────────────────────────── */
@@ -156,54 +206,95 @@ body::before {
   from { width: 0%; }
 }
 .gold-bar {
-  animation: growWidth 0.8s ease forwards;
+  animation: growWidth 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* ── Glassmorphism cards ───────────────────────────── */
+/* ── Cyber Glass ───────────────────────────────────── */
 .glass {
-  background: rgba(13, 17, 40, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(12, 12, 20, 0.7);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(176, 64, 255, 0.08);
 }
 
-/* ── Glow effects ──────────────────────────────────── */
-.glow-blue { box-shadow: 0 0 20px var(--blue-glow), inset 0 0 20px rgba(3, 151, 171, 0.05); }
-.glow-red { box-shadow: 0 0 20px var(--red-glow), inset 0 0 20px rgba(232, 64, 87, 0.05); }
-.glow-gold { box-shadow: 0 0 20px var(--gold-glow), inset 0 0 20px rgba(200, 170, 110, 0.05); }
+/* ── Neon Glow effects ─────────────────────────────── */
+.glow-blue {
+  box-shadow: 0 0 12px var(--blue-glow), 0 0 30px rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.4) !important;
+}
+.glow-red {
+  box-shadow: 0 0 12px var(--red-glow), 0 0 30px rgba(255, 32, 96, 0.08);
+  border-color: rgba(255, 32, 96, 0.4) !important;
+}
+.glow-gold {
+  box-shadow: 0 0 12px var(--gold-glow), 0 0 30px rgba(240, 224, 64, 0.08);
+  border-color: rgba(240, 224, 64, 0.4) !important;
+}
+.glow-purple {
+  box-shadow: 0 0 12px var(--cyber-purple-glow), 0 0 30px rgba(176, 64, 255, 0.08);
+  border-color: rgba(176, 64, 255, 0.4) !important;
+}
 
-/* ── Buttons ───────────────────────────────────────── */
+/* ── Cyber Buttons ─────────────────────────────────── */
 .btn-primary {
   position: relative;
   overflow: hidden;
   transition: all 0.2s ease;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
 .btn-primary::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 .btn-primary:hover::before {
   transform: translateX(100%);
 }
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px var(--gold-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--gold-glow), 0 4px 30px rgba(240, 224, 64, 0.15);
 }
 
-/* ── Divider with glow ─────────────────────────────── */
+/* ── Cyber corners (cut corner cards) ──────────────── */
+.cyber-card {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  position: relative;
+}
+.cyber-card-sm {
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+/* ── Neon text ─────────────────────────────────────── */
+.neon-blue {
+  color: var(--blue-accent);
+  text-shadow: 0 0 6px var(--blue-glow), 0 0 16px var(--blue-glow);
+}
+.neon-red {
+  color: var(--red-accent);
+  text-shadow: 0 0 6px var(--red-glow), 0 0 16px var(--red-glow);
+}
+.neon-gold {
+  color: var(--gold);
+  text-shadow: 0 0 6px var(--gold-glow), 0 0 16px var(--gold-glow);
+}
+.neon-purple {
+  color: var(--cyber-purple);
+  text-shadow: 0 0 6px var(--cyber-purple-glow), 0 0 16px var(--cyber-purple-glow);
+}
+
+/* ── Divider ───────────────────────────────────────── */
 .divider-glow {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  opacity: 0.2;
+  background: linear-gradient(90deg, transparent, var(--cyber-purple), var(--blue-accent), transparent);
+  opacity: 0.3;
 }
 
-/* ── Active pick slot pulse ────────────────────────── */
+/* ── Active pick slot ──────────────────────────────── */
 @keyframes activePulse {
-  0%, 100% { border-color: rgba(200, 170, 110, 0.3); }
-  50% { border-color: rgba(200, 170, 110, 0.8); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--cyber-purple-glow); border-color: rgba(176, 64, 255, 0.3); }
+  50% { box-shadow: 0 0 16px 2px var(--cyber-purple-glow); border-color: rgba(176, 64, 255, 0.8); }
 }
 .pick-active {
   animation: activePulse 1.5s ease infinite;
@@ -211,10 +302,42 @@ body::before {
 
 /* ── Victory animation ─────────────────────────────── */
 @keyframes victoryPulse {
-  0% { transform: scale(0.8); opacity: 0; }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.7); opacity: 0; filter: blur(8px); }
+  60% { transform: scale(1.05); opacity: 1; filter: blur(0); }
+  100% { transform: scale(1); opacity: 1; filter: blur(0); }
 }
 .victory-enter {
-  animation: victoryPulse 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: victoryPulse 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Horizontal neon line ──────────────────────────── */
+.neon-line-h {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue-accent), var(--cyber-purple), transparent);
+}
+
+/* ── Corner decorations for panels ─────────────────── */
+.cyber-corners {
+  position: relative;
+}
+.cyber-corners::before,
+.cyber-corners::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--cyber-purple);
+  opacity: 0.4;
+}
+.cyber-corners::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+.cyber-corners::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
 }

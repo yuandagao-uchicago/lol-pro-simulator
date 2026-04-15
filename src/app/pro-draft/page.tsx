@@ -6,6 +6,7 @@ import { useAuth } from '@clerk/nextjs';
 import { Champion, DRAFT_ORDER } from '@/lib/types';
 import { Lane, PICK_LANE_ORDER } from '@/lib/lanes';
 import { ProTeam } from '@/lib/pro-teams';
+import { autofillDraft } from '@/lib/autofill';
 import ChampionGrid from '@/components/ChampionGrid';
 import DraftBoard from '@/components/DraftBoard';
 
@@ -93,6 +94,16 @@ export default function ProDraftPage() {
     setRedBans([]);
     setBluePicks([]);
     setRedPicks([]);
+  };
+
+  const handleAutofill = () => {
+    if (champions.length === 0) return;
+    const result = autofillDraft(champions, step, blueBans, redBans, bluePicks, redPicks);
+    setBlueBans(result.blueBans);
+    setRedBans(result.redBans);
+    setBluePicks(result.bluePicks);
+    setRedPicks(result.redPicks);
+    setStep(DRAFT_ORDER.length);
   };
 
   const handleSimulate = async () => {
@@ -299,19 +310,28 @@ export default function ProDraftPage() {
         />
       </div>
 
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-2 mb-4 flex-wrap">
         <button onClick={handleUndo} disabled={step === 0}
-          className="px-4 py-2 text-sm font-medium bg-card-bg border border-card-border rounded-lg hover:border-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+          className="px-4 py-2 text-[10px] font-mono uppercase tracking-widest bg-card-bg border border-card-border hover:border-foreground/20 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}>
           Undo
         </button>
         <button onClick={handleReset}
-          className="px-4 py-2 text-sm font-medium bg-card-bg border border-card-border rounded-lg hover:border-gold transition-colors">
+          className="px-4 py-2 text-[10px] font-mono uppercase tracking-widest bg-card-bg border border-card-border hover:border-red-accent/30 transition-colors"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}>
           Reset
         </button>
+        {!isComplete && (
+          <button onClick={handleAutofill}
+            className="px-4 py-2 text-[10px] font-mono uppercase tracking-widest border border-card-border hover:border-blue-accent/40 transition-colors"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))', background: 'var(--card-bg)' }}>
+            Autofill
+          </button>
+        )}
         {isComplete && (
           <button onClick={handleSimulate} disabled={simulating}
-            className="px-6 py-2 text-sm font-bold bg-gold text-background rounded-lg hover:bg-gold-dark transition-colors disabled:opacity-50 ml-auto">
-            {simulating ? 'Simulating...' : 'Simulate Game!'}
+            className="btn-primary px-6 py-2 text-[10px] font-mono uppercase tracking-widest font-bold bg-gold text-background disabled:opacity-50 ml-auto">
+            {simulating ? '// simulating...' : 'Simulate'}
           </button>
         )}
       </div>
