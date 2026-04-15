@@ -565,3 +565,56 @@ export function getPlayerById(id: string): ProPlayer | undefined {
   }
   return undefined;
 }
+
+export interface PlayerWithTeam extends ProPlayer {
+  teamName: string;
+  teamShortName: string;
+}
+
+/** Get all players for a given lane, tagged with their team info */
+export function getPlayersByLane(lane: Lane): PlayerWithTeam[] {
+  const players: PlayerWithTeam[] = [];
+  for (const team of PRO_TEAMS) {
+    for (const player of team.roster) {
+      if (player.lane === lane) {
+        players.push({ ...player, teamName: team.name, teamShortName: team.shortName });
+      }
+    }
+  }
+  return players;
+}
+
+/** Get all players across all teams, tagged with their team info */
+export function getAllPlayers(): PlayerWithTeam[] {
+  const players: PlayerWithTeam[] = [];
+  for (const team of PRO_TEAMS) {
+    for (const player of team.roster) {
+      players.push({ ...player, teamName: team.name, teamShortName: team.shortName });
+    }
+  }
+  return players;
+}
+
+/** Build a synthetic ProTeam from individually-picked players */
+export function buildCustomTeam(
+  name: string,
+  shortName: string,
+  roster: ProPlayer[],
+): ProTeam {
+  // Average the player stats to derive team-level stats
+  const avg = (fn: (p: ProPlayer) => number) =>
+    Math.round(roster.reduce((sum, p) => sum + fn(p), 0) / Math.max(1, roster.length));
+
+  return {
+    id: `custom-${shortName.toLowerCase()}`,
+    name,
+    shortName,
+    region: 'CUSTOM',
+    teamwork: Math.round(avg(p => p.gameIQ) * 0.8), // Custom teams have lower synergy
+    earlyGame: avg(p => p.mechanics),
+    lateGame: avg(p => p.gameIQ),
+    objective: avg(p => (p.gameIQ + p.consistency) / 2),
+    aggression: avg(p => p.mechanics),
+    roster,
+  };
+}

@@ -39,8 +39,8 @@ function GoldGraph({ goldTimeline, blueLabel, redLabel }: {
   const redLine = goldTimeline.map((s, i) => `${xScale(i)},${yScale(s.redGold)}`).join(' ');
 
   return (
-    <div className="bg-card-bg rounded-xl border border-card-border p-4">
-      <h3 className="text-sm font-bold text-foreground/60 mb-2">Gold Over Time</h3>
+    <div className="bg-card-bg border border-card-border p-4 cyber-card cyber-corners">
+      <h3 className="text-[10px] font-mono font-bold text-foreground/40 mb-3 uppercase tracking-[0.2em]">// Gold Over Time</h3>
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
         {/* Grid lines */}
         {[0.25, 0.5, 0.75, 1].map(pct => (
@@ -79,49 +79,52 @@ function PlayerStatsTable({ playerStats, winner }: { playerStats: GameState['pla
 
   const Row = ({ p, isWinner }: { p: typeof playerStats[0]; isWinner: boolean }) => {
     const kda = ((p.kills + p.assists) / Math.max(1, p.deaths)).toFixed(1);
+    const kdaNum = parseFloat(kda);
     return (
-      <tr className={`border-b border-card-border/30 ${isWinner ? 'bg-gold/5' : ''}`}>
-        <td className="py-2 px-2">
+      <tr className={`border-b border-card-border/20 transition-colors hover:bg-foreground/[0.02] ${isWinner ? 'bg-gold/[0.03]' : ''}`}>
+        <td className="py-2 px-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded overflow-hidden flex-shrink-0">
+            <div className="w-7 h-7 overflow-hidden flex-shrink-0 cyber-card-sm">
               <Image src={p.championImage} alt={p.championName} width={28} height={28} className="w-full h-full object-cover" />
             </div>
             <div>
-              <div className="text-xs font-semibold">{p.playerName}</div>
-              <div className="text-[10px] text-foreground/30">{p.championName}</div>
+              <div className="text-xs font-bold font-mono uppercase tracking-wide">{p.playerName}</div>
+              <div className="text-[9px] text-foreground/25 font-mono">{p.championName}</div>
             </div>
           </div>
         </td>
-        <td className="py-2 px-2 text-center text-xs font-mono">
-          <span className="text-green-400">{p.kills}</span>/
-          <span className="text-red-400">{p.deaths}</span>/
-          <span className="text-foreground/60">{p.assists}</span>
+        <td className="py-2 px-2 text-center text-xs font-mono font-bold">
+          <span className="text-green-400">{p.kills}</span>
+          <span className="text-foreground/20">/</span>
+          <span className="text-red-400">{p.deaths}</span>
+          <span className="text-foreground/20">/</span>
+          <span className="text-foreground/50">{p.assists}</span>
         </td>
-        <td className="py-2 px-2 text-center text-xs text-foreground/50">{kda}</td>
-        <td className="py-2 px-2 text-center text-xs text-foreground/50">{p.cs}</td>
-        <td className="py-2 px-2 text-center text-xs text-foreground/50">{(p.gold / 1000).toFixed(1)}k</td>
-        <td className="py-2 px-2 text-center text-xs text-foreground/50">{(p.damage / 1000).toFixed(1)}k</td>
+        <td className={`py-2 px-2 text-center text-xs font-mono font-bold ${kdaNum >= 5 ? 'text-gold' : kdaNum >= 3 ? 'text-foreground/70' : 'text-foreground/40'}`}>{kda}</td>
+        <td className="py-2 px-2 text-center text-xs font-mono text-foreground/40">{p.cs}</td>
+        <td className="py-2 px-2 text-center text-xs font-mono text-gold/60">{(p.gold / 1000).toFixed(1)}k</td>
+        <td className="py-2 px-2 text-center text-xs font-mono text-foreground/40">{(p.damage / 1000).toFixed(1)}k</td>
       </tr>
     );
   };
 
   return (
-    <div className="bg-card-bg rounded-xl border border-card-border overflow-hidden">
+    <div className="bg-card-bg border border-card-border overflow-hidden cyber-card cyber-corners">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-card-border text-foreground/40">
-            <th className="py-2 px-2 text-left text-xs font-medium">Player</th>
-            <th className="py-2 px-2 text-center text-xs font-medium">K/D/A</th>
-            <th className="py-2 px-2 text-center text-xs font-medium">KDA</th>
-            <th className="py-2 px-2 text-center text-xs font-medium">CS</th>
-            <th className="py-2 px-2 text-center text-xs font-medium">Gold</th>
-            <th className="py-2 px-2 text-center text-xs font-medium">DMG</th>
+          <tr className="border-b border-card-border bg-background/50">
+            <th className="py-2 px-3 text-left text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-foreground/30">Player</th>
+            <th className="py-2 px-2 text-center text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-foreground/30">K/D/A</th>
+            <th className="py-2 px-2 text-center text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-foreground/30">KDA</th>
+            <th className="py-2 px-2 text-center text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-foreground/30">CS</th>
+            <th className="py-2 px-2 text-center text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-foreground/30">Gold</th>
+            <th className="py-2 px-2 text-center text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-foreground/30">DMG</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colSpan={6} className="py-1 px-2 text-xs font-bold text-blue-accent bg-blue-accent/5">Blue Side</td></tr>
+          <tr><td colSpan={6} className="py-1.5 px-3 text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-blue-accent bg-blue-accent/[0.07] border-l-2 border-blue-accent/50">Blue Side</td></tr>
           {bluePlayers.map(p => <Row key={p.playerName} p={p} isWinner={winner === 'blue'} />)}
-          <tr><td colSpan={6} className="py-1 px-2 text-xs font-bold text-red-accent bg-red-accent/5">Red Side</td></tr>
+          <tr><td colSpan={6} className="py-1.5 px-3 text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-red-accent bg-red-accent/[0.07] border-l-2 border-red-accent/50">Red Side</td></tr>
           {redPlayers.map(p => <Row key={p.playerName} p={p} isWinner={winner === 'red'} />)}
         </tbody>
       </table>
@@ -161,64 +164,76 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Scoreboard */}
-      <div className="flex items-center justify-between p-5 bg-card-bg rounded-xl border border-card-border">
-        <div className="text-center flex-1">
-          <div className="text-xs text-blue-accent font-bold mb-1">{blueLabel}</div>
-          <div className="text-4xl font-extrabold text-blue-accent">{gameState.blueKills}</div>
+      <div className="flex items-center justify-between p-5 bg-card-bg border border-card-border cyber-card cyber-corners relative overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-accent/[0.03] via-transparent to-red-accent/[0.03]" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-blue-accent/30 via-transparent to-red-accent/30" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-blue-accent/20 via-transparent to-red-accent/20" />
+
+        <div className="text-center flex-1 relative z-10">
+          <div className="text-[10px] font-mono text-blue-accent font-bold mb-1 uppercase tracking-[0.2em]">{blueLabel}</div>
+          <div className="text-4xl font-extrabold neon-blue font-mono">{gameState.blueKills}</div>
         </div>
-        <div className="flex gap-6 items-center">
+        <div className="flex gap-5 items-center relative z-10">
           <div className="text-center">
-            <div className="text-lg font-medium text-foreground/60">{gameState.blueTowers}</div>
+            <div className="text-lg font-bold font-mono text-foreground/50">{gameState.blueTowers}</div>
             <div className="text-[10px] text-foreground/30">\ud83c\udff0</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-medium text-foreground/60">{gameState.blueDragons}</div>
+            <div className="text-lg font-bold font-mono text-foreground/50">{gameState.blueDragons}</div>
             <div className="text-[10px] text-foreground/30">\ud83d\udc09</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-medium text-foreground/60">{gameState.blueBarons}</div>
+            <div className="text-lg font-bold font-mono text-foreground/50">{gameState.blueBarons}</div>
             <div className="text-[10px] text-foreground/30">\ud83d\udc79</div>
           </div>
         </div>
-        <div className="px-6">
-          <div className="text-2xl font-extrabold text-gold">VS</div>
+        <div className="px-6 relative z-10">
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-8 h-px bg-gradient-to-r from-blue-accent/40 to-red-accent/40" />
+            <div className="text-lg font-extrabold neon-gold font-mono tracking-widest">VS</div>
+            <div className="w-8 h-px bg-gradient-to-r from-blue-accent/40 to-red-accent/40" />
+          </div>
         </div>
-        <div className="flex gap-6 items-center">
+        <div className="flex gap-5 items-center relative z-10">
           <div className="text-center">
-            <div className="text-lg font-medium text-foreground/60">{gameState.redBarons}</div>
+            <div className="text-lg font-bold font-mono text-foreground/50">{gameState.redBarons}</div>
             <div className="text-[10px] text-foreground/30">\ud83d\udc79</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-medium text-foreground/60">{gameState.redDragons}</div>
+            <div className="text-lg font-bold font-mono text-foreground/50">{gameState.redDragons}</div>
             <div className="text-[10px] text-foreground/30">\ud83d\udc09</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-medium text-foreground/60">{gameState.redTowers}</div>
+            <div className="text-lg font-bold font-mono text-foreground/50">{gameState.redTowers}</div>
             <div className="text-[10px] text-foreground/30">\ud83c\udff0</div>
           </div>
         </div>
-        <div className="text-center flex-1">
-          <div className="text-xs text-red-accent font-bold mb-1">{redLabel}</div>
-          <div className="text-4xl font-extrabold text-red-accent">{gameState.redKills}</div>
+        <div className="text-center flex-1 relative z-10">
+          <div className="text-[10px] font-mono text-red-accent font-bold mb-1 uppercase tracking-[0.2em]">{redLabel}</div>
+          <div className="text-4xl font-extrabold neon-red font-mono">{gameState.redKills}</div>
         </div>
       </div>
 
       {/* Gold Bar */}
-      <div className="flex items-center gap-3">
-        <span className="text-xs text-blue-accent font-bold w-16 text-right">
+      <div className="flex items-center gap-3 px-1">
+        <span className="text-[10px] font-mono font-bold neon-blue w-16 text-right tracking-wide">
           {(gameState.blueGold / 1000).toFixed(1)}k
         </span>
-        <div className="flex-1 h-4 rounded-full overflow-hidden bg-card-bg flex">
-          <div
-            className="h-full bg-blue-accent gold-bar rounded-l-full"
-            style={{ width: `${(gameState.blueGold / (gameState.blueGold + gameState.redGold)) * 100}%` }}
-          />
-          <div
-            className="h-full bg-red-accent gold-bar rounded-r-full"
-            style={{ width: `${(gameState.redGold / (gameState.blueGold + gameState.redGold)) * 100}%` }}
-          />
+        <div className="flex-1 relative">
+          <div className="h-3 overflow-hidden bg-card-bg/80 flex border border-card-border/50" style={{ clipPath: 'polygon(4px 0, calc(100% - 4px) 0, 100% 50%, calc(100% - 4px) 100%, 4px 100%, 0 50%)' }}>
+            <div
+              className="h-full bg-gradient-to-r from-blue-accent/80 to-blue-accent gold-bar"
+              style={{ width: `${(gameState.blueGold / (gameState.blueGold + gameState.redGold)) * 100}%` }}
+            />
+            <div
+              className="h-full bg-gradient-to-l from-red-accent/80 to-red-accent gold-bar"
+              style={{ width: `${(gameState.redGold / (gameState.blueGold + gameState.redGold)) * 100}%` }}
+            />
+          </div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[7px] font-mono text-foreground/30 uppercase tracking-widest">gold</div>
         </div>
-        <span className="text-xs text-red-accent font-bold w-16">
+        <span className="text-[10px] font-mono font-bold neon-red w-16 tracking-wide">
           {(gameState.redGold / 1000).toFixed(1)}k
         </span>
       </div>
