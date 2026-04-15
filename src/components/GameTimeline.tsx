@@ -272,10 +272,23 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
       </div>
 
       {/* Timeline */}
-      <div ref={timelineRef} className="flex flex-col gap-3 max-h-[600px] overflow-y-auto pr-3 pl-1 py-2">
-        {gameState.events.slice(0, visibleEvents).map((event, i) => (
+      <div ref={timelineRef} className="flex flex-col max-h-[600px] overflow-y-auto pr-3 pl-1 py-2">
+        {gameState.events.slice(0, visibleEvents).map((event, i) => {
+          const prev = i > 0 ? gameState.events[i - 1] : null;
+          const minuteGap = prev ? event.minute - prev.minute : 0;
+          const showTimeDivider = minuteGap >= 3;
+
+          return (
+          <div key={i} className={`${i > 0 ? showTimeDivider ? 'mt-5' : 'mt-2.5' : ''}`}>
+            {/* Time divider for big gaps */}
+            {showTimeDivider && (
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1 h-px bg-card-border/20" />
+                <span className="text-[8px] font-mono text-foreground/15 uppercase tracking-[0.3em]">{event.minute} min</span>
+                <div className="flex-1 h-px bg-card-border/20" />
+              </div>
+            )}
           <div
-            key={i}
             className={`event-enter flex items-start gap-3 border transition-all relative ${
               event.highlight
                 ? `cyber-card-sm event-highlight ${event.team === 'blue'
@@ -316,7 +329,9 @@ export default function GameTimeline({ gameState }: GameTimelineProps) {
               {event.time}
             </span>
           </div>
-        ))}
+          </div>
+          );
+        })}
       </div>
 
       {/* Winner */}

@@ -332,20 +332,14 @@ export function simulateGame(opts: SimulationOptions): GameState {
   // Rift Herald (14 min)
   minute = rand(13.5, 15.5);
   const heraldSide = weighted(bs.obj + momentum * 2, rs.obj - momentum * 2);
-  state.events.push({
-    time: fmt(minute), minute: Math.floor(minute),
-    type: 'herald', team: heraldSide,
-    description: `${teamLabel(heraldSide)} takes Rift Herald and charges it mid!`,
-    commentary: `"Good herald pickup by ${teamLabel(heraldSide)}. Let's see what they do with it."`,
-  });
-  // Herald gives a tower plate or tower
+  // Herald gives a tower
   if (heraldSide === 'blue') { state.blueTowers++; blueRunningGold += 550; }
   else { state.redTowers++; redRunningGold += 550; }
   state.events.push({
-    time: fmt(minute + 0.5), minute: Math.floor(minute),
-    type: 'tower', team: heraldSide,
-    description: `Rift Herald crashes into a tower — ${teamLabel(heraldSide)} takes First Tower!`,
-    commentary: C.getTowerCommentary(teamLabel(heraldSide), 1),
+    time: fmt(minute), minute: Math.floor(minute),
+    type: 'herald', team: heraldSide,
+    description: `${teamLabel(heraldSide)} takes Rift Herald, charges mid, and destroys First Tower!`,
+    commentary: `"Smart herald play by ${teamLabel(heraldSide)}. First Tower gold is huge this early."`,
     highlight: true,
     goldSwing: 550,
   });
@@ -448,15 +442,7 @@ export function simulateGame(opts: SimulationOptions): GameState {
         goldSwing: goldGain,
       });
 
-      if (isAce) {
-        state.events.push({
-          time: fmt(minute + 0.3), minute: Math.floor(minute),
-          type: 'ace', team: side,
-          description: `ACE! ${teamLabel(side)} wipes the enemy team!`,
-          commentary: C.getTeamfightCommentary(teamLabel(side), killsW, true),
-          highlight: true,
-        });
-      }
+      // ACE is indicated by the parent event type being 'ace'
     }
 
     // Passive income
@@ -537,28 +523,21 @@ export function simulateGame(opts: SimulationOptions): GameState {
       else { redRunningGold += goldGain; momentum -= killsW * 1.5; }
 
       const mvpPlayer = pick(side === 'blue' ? bluePlayers : redPlayers);
-      state.events.push({
-        time: fmt(minute), minute: Math.floor(minute),
-        type: killsW >= 4 ? 'ace' : 'teamfight', team: side,
-        description: `${tfDesc} — ${teamLabel(side)} dominates ${killsW}-${killsL}! ${mvpPlayer.name}'s ${mvpPlayer.champ.name} is unstoppable!`,
-        commentary: C.getTeamfightCommentary(teamLabel(side), killsW, killsW >= 4),
-        playerName: mvpPlayer.name,
-        highlight: true,
-        goldSwing: goldGain,
-      });
-
       // Push towers after winning teamfight
       const towersTaken = randInt(1, 3);
       for (let t = 0; t < towersTaken; t++) {
         if (side === 'blue') { state.blueTowers++; blueRunningGold += 550; }
         else { state.redTowers++; redRunningGold += 550; }
       }
+      const towerNote = ` They take ${towersTaken} tower${towersTaken > 1 ? 's' : ''} off the fight.`;
       state.events.push({
-        time: fmt(minute + 0.5), minute: Math.floor(minute),
-        type: 'tower', team: side,
-        description: `${teamLabel(side)} pushes and destroys ${towersTaken} tower${towersTaken > 1 ? 's' : ''} off the fight`,
-        commentary: C.getTowerCommentary(teamLabel(side), towersTaken),
-        goldSwing: towersTaken * 550,
+        time: fmt(minute), minute: Math.floor(minute),
+        type: killsW >= 4 ? 'ace' : 'teamfight', team: side,
+        description: `${tfDesc} — ${teamLabel(side)} dominates ${killsW}-${killsL}! ${mvpPlayer.name}'s ${mvpPlayer.champ.name} is unstoppable!${towerNote}`,
+        commentary: C.getTeamfightCommentary(teamLabel(side), killsW, killsW >= 4),
+        playerName: mvpPlayer.name,
+        highlight: true,
+        goldSwing: goldGain + towersTaken * 550,
       });
 
     } else if (roll < 0.6 && dragonCount < 6) {
